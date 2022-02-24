@@ -28,6 +28,9 @@ public class player : MonoBehaviour
     private bool isOtherJump = false;//objectcollisionを踏んだ時のジャンプ判定を受け取る変数
     private bool isContinue = false;
     private bool nonDownAnim = false;
+    private bool pushUpKey2 = false;
+    private bool pushRightKey2 = false;
+    private bool pushLeftKey2 = false;
     private float continueTime = 0.0f;//コンティニューしているかどうかのフラグ
     private float blinkTime = 0.0f;
     private bool isRun = false;//走ってるかどうか
@@ -144,7 +147,7 @@ public class player : MonoBehaviour
         }
         else if (isGround)
         {
-            if (pushUpKey)
+            if (pushUpKey || pushUpKey2)
             {
                 yspeed = jumpSpeed;
                 jumpPos = transform.position.y;//ジャンプした位置を記録する
@@ -154,6 +157,7 @@ public class player : MonoBehaviour
             else
             {
                 isJump = false;
+                pushUpKey2 = false;
             }
         }
 
@@ -162,7 +166,7 @@ public class player : MonoBehaviour
         {
             bool canHeight = jumpPos + jumpHeight > transform.position.y;//現在の高さが飛べる高さより下か
             bool canTime = jumpLimitTime > jumpTime;//ジャンプしている時間が制限時間を超えていないか
-            if (pushUpKey && canHeight && !isHead && canTime)
+            if (canHeight && !isHead && canTime && (pushUpKey || pushUpKey2))
             {
                 yspeed = jumpSpeed;
                 jumpTime += Time.deltaTime;
@@ -170,6 +174,7 @@ public class player : MonoBehaviour
             else
             {
                 isJump = false;
+                pushUpKey2 = false;
                 jumpTime = 0f;
             }
         }
@@ -194,7 +199,7 @@ public class player : MonoBehaviour
         float xspeed = 0.0f;
 
         //キー入力に応じて左右移動
-        if (horizontalKey > 0)
+        if (horizontalKey > 0 || pushRightKey2)
         {
 
             transform.localScale = new Vector3(2, 2, 2);
@@ -202,7 +207,7 @@ public class player : MonoBehaviour
             RunTime += Time.deltaTime;
             xspeed = speed;
         }
-        else if (horizontalKey < 0)
+        else if (horizontalKey < 0 || pushLeftKey2)
         {
 
             transform.localScale = new Vector3(-2, 2, 2);
@@ -368,5 +373,30 @@ public class player : MonoBehaviour
         {
             ReceiveDamage(true);
         }
+    }
+
+    public void PushUp()
+    {
+        pushUpKey2 = true;
+    }
+
+    public void PushDownLeft()
+    {
+        pushLeftKey2 = true;
+    }
+
+    public void PushUpLeft()
+    {
+        pushLeftKey2 = false;
+    }
+
+    public void PushDownRight()
+    {
+        pushRightKey2 = true;
+    }
+
+    public void PushUpRight()
+    {
+        pushRightKey2 = false;
     }
 }
