@@ -9,7 +9,8 @@ public class Enemy : MonoBehaviour
     [Header("画面外でも行動するか")] public bool nonvisible;
     [Header("接触判定")] public EnemyCollisionCheck checkCollision;
     [Header("倒して加算されるスコア")] public int score;
-
+    //音声
+    [Header("倒された音")] public AudioClip enemyDownSE;
 
     private Rigidbody2D rb = null;//物理演算の変数
     private SpriteRenderer sr = null;//絵の変数
@@ -65,6 +66,7 @@ public class Enemy : MonoBehaviour
         {
             if(!isDead)
             {
+                GM.instance.PlaySE(enemyDownSE);
                 anim.Play("dead");
                 rb.velocity = new Vector2(0, -gravity);
                 isDead = true;

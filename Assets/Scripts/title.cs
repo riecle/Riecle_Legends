@@ -6,9 +6,14 @@ using UnityEngine.SceneManagement;
 public class title : MonoBehaviour
 {
     [Header("フェード")] public Fade fade;
+    [Header("スタートボイス")] public AudioClip StartVoice;
+    [Header("スタート音")] public AudioClip StartSE;
+    [Header("プッシュしてから何フレーム後に再生されるか")] public int flameCountOver;
 
     private bool firstPush = false;//ボタンが押されたらtrue
     private bool goNextScene = false;//次のシーンへ行くかどうかのフラグ
+    private bool pushOn = false;
+    private int frameCount = 0;//何フレームたったか
 
     //スタートボタンが押されたら呼ばれる
     public void PushStart()
@@ -18,7 +23,9 @@ public class title : MonoBehaviour
         {
             Debug.Log("次のシーンへ");
             //ここに次のシーンへ行く命令を書く
-            fade.StartFadeOut();            
+            GM.instance.PlaySE(StartSE);
+            GM.instance.PlaySE(StartVoice);
+            pushOn = true;
             firstPush = true;
         }
     }
@@ -30,6 +37,15 @@ public class title : MonoBehaviour
         {
             SceneManager.LoadScene("stage1");
             goNextScene = true;
+        }
+
+        if(pushOn)
+        {
+            if (frameCount > flameCountOver)
+            {
+                fade.StartFadeOut();
+            }
+            ++frameCount;
         }
     }
 }

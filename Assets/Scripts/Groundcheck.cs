@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class Groundcheck : MonoBehaviour
 {
+
+    [Header("エフェクトがついた床を判定するか")]public bool checkPlatformGround;
+
     private string groundTag = "Ground";//タグ判定のための変数
+    private string platformTag = "GroundPlatform";
+    private string moveFloorTag = "MoveFloor";
+    private string fallFloorTag = "FallFloor";
     private bool isGround = false;//接地判定のための変数
     private bool isGroundEnter, isGroundStay, isGroundExit;//接地判定のための変数完全版
 
@@ -39,6 +45,10 @@ public class Groundcheck : MonoBehaviour
             isGroundEnter = true;
             //Debug.Log("接地");
         }
+        else if(checkPlatformGround && (collision.tag == platformTag || collision.tag == moveFloorTag || collision.tag == fallFloorTag))
+        {
+            isGroundEnter = true;
+        }
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -46,6 +56,10 @@ public class Groundcheck : MonoBehaviour
         {
             isGroundStay = true;
             //Debug.Log("継続");
+        }
+        else if (checkPlatformGround && (collision.tag == platformTag || collision.tag == moveFloorTag || collision.tag == fallFloorTag))
+        {
+            isGroundStay = true;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
@@ -55,6 +69,10 @@ public class Groundcheck : MonoBehaviour
             isGround = false;
             isGroundExit = true;
             //Debug.Log("出た");
+        }
+        else if (checkPlatformGround && (collision.tag == platformTag || collision.tag == moveFloorTag || collision.tag == fallFloorTag))
+        {
+            isGroundExit = true;
         }
     }
 }

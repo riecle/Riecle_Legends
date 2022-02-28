@@ -15,6 +15,10 @@ public class player : MonoBehaviour
     [Header("踏みつけ判定の高さの割合")] public float stepOnRate;
     [Header("走る曲線")] public AnimationCurve RunCurve;
     [Header("ジャンプ曲線")]public AnimationCurve JumpCurve;
+
+    //音声
+    [Header("ジャンプ音")] public AudioClip jumpSE;
+    [Header("ダウン音")] public AudioClip downSE;
     #endregion
 
     #region//プライベート変数
@@ -22,6 +26,7 @@ public class player : MonoBehaviour
     private Rigidbody2D rb = null;//物理演算の変数
     private CapsuleCollider2D capcol = null;//カプセルコライダー2Dを入れておく変数
     private SpriteRenderer sr = null;//絵を入れておく変数
+    private MoveObject moveObj = null;
     private bool isGround = false;//接地判定を受け取る変数
     private bool isHead = false;//頭の接地判定を受け取る変数
     private bool isJump = false;//ジャンプ判定を受け取る変数
@@ -43,6 +48,8 @@ public class player : MonoBehaviour
     private string EnemyTag = "Enemy";//Ememy判定するための変数
     private string deadAreaTag = "DeadArea";
     private string hitAreaTag = "HitArea";
+    private string moveFloorTag = "MoveFloor";
+    private string fallFloorTag = "FallFloor";
     #endregion
 
     // Start is called before the first frame update
@@ -111,7 +118,12 @@ public class player : MonoBehaviour
             SetAnimation();
 
             //移動速度を設定する
-            rb.velocity = new Vector2(xspeed, yspeed);
+            Vector2 addVelocity = Vector2.zero;
+            if(moveObj != null)
+            {
+                addVelocity = moveObj.GetVelocity();
+            }
+            rb.velocity = new Vector2(xspeed, yspeed) + addVelocity;
         }
         else
         {
@@ -145,10 +157,15 @@ public class player : MonoBehaviour
                 jumpTime = 0f;
             }
         }
+        //地面にいるとき
         else if (isGround)
         {
             if (pushUpKey || pushUpKey2)
             {
+                if (!isJump)
+                {
+                    GM.instance.PlaySE(jumpSE);
+                }
                 yspeed = jumpSpeed;
                 jumpPos = transform.position.y;//ジャンプした位置を記録する
                 isJump = true;
@@ -202,7 +219,7 @@ public class player : MonoBehaviour
         if (horizontalKey > 0 || pushRightKey2)
         {
 
-            transform.localScale = new Vector3(2, 2, 2);
+            transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             isRun = true;
             RunTime += Time.deltaTime;
             xspeed = speed;
@@ -210,7 +227,7 @@ public class player : MonoBehaviour
         else if (horizontalKey < 0 || pushLeftKey2)
         {
 
-            transform.localScale = new Vector3(-2, 2, 2);
+            transform.localScale = new Vector3(-1.5f, 1.5f, 1.5f);
             isRun = true;
             RunTime += Time.deltaTime;
             xspeed = -speed;
@@ -301,6 +318,11 @@ public class player : MonoBehaviour
             {
                 nonDownAnim = true;
             }
+
+            if (GM.instance.heartNum > 0)
+            {
+                GM.instance.PlaySE(downSE);
+            }
             isDown = true;
             GM.instance.SubHeartNum();
         }
@@ -311,8 +333,11 @@ public class player : MonoBehaviour
     /// </summary>
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        bool enemy = (collision.collider.tag == EnemyTag);
+        bool moveFloor = (collision.collider.tag == moveFloorTag);
+        bool fallFloor = (collision.collider.tag == fallFloorTag);
 
-        if (collision.collider.tag == EnemyTag)
+        if (enemy || moveFloor || fallFloor)
         {
             //踏みつけ判定になる高さ
             float stepOnHeight = (capcol.size.y * (stepOnRate / 100f));
@@ -325,29 +350,54 @@ public class player : MonoBehaviour
 
                 if(p.point.y < judgePos)
                 {
-                    
-                    ObjectCollision o = collision.gameObject.GetComponent<ObjectCollision>();
-                    if(o != null)
+                    if (enemy || fallFloor)
                     {
-                        otherJumpHeight = o.boundHeight;//踏んづけたものから跳ねる高さを取得する
-                        o.playerStepJdg = true;//プレイヤーが踏んづけた判定にする
-                        jumpPos = transform.position.y;//ジャンプした位置を記録
-                        isOtherJump = true;
-                        isJump = false;
-                        jumpTime = 0.0f;
+                        ObjectCollision o = collision.gameObject.GetComponent<ObjectCollision>();
+                        if (o != null)
+                        {
+                            if (enemy)
+                            {
+                                otherJumpHeight = o.boundHeight;//踏んづけたものから跳ねる高さを取得する
+                                o.playerStepJdg = true;//プレイヤーが踏んづけた判定にする
+                                jumpPos = transform.position.y;//ジャンプした位置を記録
+                                isOtherJump = true;
+                                isJump = false;
+                                jumpTime = 0.0f;
+                            }
+                            else if(fallFloor)
+                            {
+                                o.playerStepJdg = true;
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("ObjectCollisionが付いてないよ！");
+                        }
                     }
-                    else
+                    else if (moveFloor)
                     {
-                        Debug.Log("ObjectCollisionが付いてないよ！");
+                                moveObj = collision.gameObject.GetComponent<MoveObject>();
                     }
                 }
                 else
                 {
-                    ReceiveDamage(true);
-                    break;
+                    if (enemy)
+                    {
+                        ReceiveDamage(true);
+                        break;
+                    }
                 }
             }
       
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if(collision.collider.tag == moveFloorTag)
+        {
+            //動く床から離れた
+            moveObj = null;
         }
     }
 

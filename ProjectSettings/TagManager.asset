@@ -10,6 +10,8 @@ TagManager:
   - Item
   - DeadArea
   - HitArea
+  - GroundPlatform
+  - MoveFloor
   layers:
   - Default
   - TransparentFX
