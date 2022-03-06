@@ -33,6 +33,7 @@ public class player : MonoBehaviour
     private bool isOtherJump = false;//objectcollisionを踏んだ時のジャンプ判定を受け取る変数
     private bool isContinue = false;
     private bool nonDownAnim = false;
+    private bool isClearMotion = false;
     private bool pushUpKey2 = false;
     private bool pushRightKey2 = false;
     private bool pushLeftKey2 = false;
@@ -104,7 +105,7 @@ public class player : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!isDown && !GM.instance.isGameOver)
+        if (!isDown && !GM.instance.isGameOver && !GM.instance.isStageClear)
         {
             //接地判定を得る
             isGround = ground.IsGround();
@@ -127,6 +128,12 @@ public class player : MonoBehaviour
         }
         else
         {
+            if (!isClearMotion && GM.instance.isStageClear)
+            {
+                anim.Play("player_clear");
+                isClearMotion = true;
+                
+            }
             rb.velocity = new Vector2(0f, -gravity);
         }
     }
@@ -302,9 +309,10 @@ public class player : MonoBehaviour
         nonDownAnim = false;
     }
 
+    //やられた時
     private void ReceiveDamage(bool downAnim)
     {
-        if (isDown)
+        if (isDown || GM.instance.isStageClear)
         {
             return;
         }
@@ -425,6 +433,7 @@ public class player : MonoBehaviour
         }
     }
 
+    //モバイル移動対応
     public void PushUp()
     {
         pushUpKey2 = true;

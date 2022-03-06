@@ -9,11 +9,14 @@ public class StageCtrl : MonoBehaviour
     [Header("コンティニュー位置")] public GameObject[] continuePoint;
     [Header("ゲームオーバー")]public GameObject gameOverObj;
     [Header("フェード")]public Fade fade;
+    [Header("ステージクリア")] public GameObject stageClearObj;
+    [Header("ステージクリア判定")] public PlayerTriggerCheck stageClearTrigger;
 
     //音声
     [Header("リトライ音")] public AudioClip RetrySE;
     [Header("ゲームオーバー音")] public AudioClip GameOverSE;
     [Header("止めたいBGM")]public AudioSource audioSource;
+    [Header("ステージクリア音")] public AudioClip stageClearSE;
 
     private player p;
     private int nextStageNum;
@@ -21,6 +24,7 @@ public class StageCtrl : MonoBehaviour
     private bool doGameOver = false;
     private bool retryGame = false;
     private bool doSceneChange = false;
+    private bool doClear = false;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +33,7 @@ public class StageCtrl : MonoBehaviour
         if (playerObj != null && continuePoint != null && continuePoint.Length > 0 && gameOverObj != null && fade != null)
         {
             gameOverObj.SetActive(false);
+            stageClearObj.SetActive(false);
             //設定したプレイヤーの位置を設定したcontinuepoint[0]の位置へ移動させる
             playerObj.transform.position = continuePoint[0].transform.position;
 
@@ -70,6 +75,11 @@ public class StageCtrl : MonoBehaviour
                     Debug.Log("コンティニューポイントの設定が足りてないよ！");
                 }
           }
+        else if(stageClearTrigger != null && stageClearTrigger.isOn && !doGameOver && !doClear)
+        {
+            StageClear();
+            doClear = true;
+        }
             //ステージを切り替える
             if(fade != null && startFade && !doSceneChange)
             {
@@ -85,6 +95,7 @@ public class StageCtrl : MonoBehaviour
                     {
                         GM.instance.stageNum = nextStageNum;
                     }
+                    GM.instance.isStageClear = false;
                     SceneManager.LoadScene("stage" + nextStageNum);
                     doSceneChange = true;
                 }
@@ -113,5 +124,12 @@ public class StageCtrl : MonoBehaviour
             fade.StartFadeOut();
             startFade = true;
         }
+    }
+
+    public void StageClear()
+    {
+        GM.instance.isStageClear = true;
+        stageClearObj.SetActive(true);
+        GM.instance.PlaySE(stageClearSE);
     }
 }
