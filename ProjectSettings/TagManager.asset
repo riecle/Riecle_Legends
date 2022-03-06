@@ -12,6 +12,7 @@ TagManager:
   - HitArea
   - GroundPlatform
   - MoveFloor
+  - FallFloor
   layers:
   - Default
   - TransparentFX
