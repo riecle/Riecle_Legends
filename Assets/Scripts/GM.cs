@@ -12,6 +12,7 @@ public class GM : MonoBehaviour
     [Header("現在の復帰位置")] public int continueNum;
     [Header("現在の残機")] public int heartNum;
     [Header("デフォルトの残機")] public int defaultHeartNum;
+    [HideInInspector] public bool smartmode = false;
     [HideInInspector] public bool isGameOver;
     [HideInInspector] public bool isStageClear;
 

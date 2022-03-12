@@ -15,6 +15,10 @@ public class player : MonoBehaviour
     [Header("踏みつけ判定の高さの割合")] public float stepOnRate;
     [Header("走る曲線")] public AnimationCurve RunCurve;
     [Header("ジャンプ曲線")]public AnimationCurve JumpCurve;
+    [Header("左の上キー")] public GameObject UpLeftKey;
+    [Header("右の上キー")] public GameObject UpRightKey;
+    [Header("右方向キー")] public GameObject RightKey;
+    [Header("左方向キー")] public GameObject LeftKey;
 
     //音声
     [Header("ジャンプ音")] public AudioClip jumpSE;
@@ -62,7 +66,21 @@ public class player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         capcol = GetComponent<CapsuleCollider2D>();
         sr = GetComponent<SpriteRenderer>();
-       
+
+        if (GM.instance.smartmode)
+        {
+            UpRightKey.SetActive(true);
+            UpLeftKey.SetActive(true);
+            RightKey.SetActive(true);
+            LeftKey.SetActive(true);
+        }
+        else
+        {
+            UpRightKey.SetActive(false);
+            UpLeftKey.SetActive(false);
+            RightKey.SetActive(false);
+            LeftKey.SetActive(false);
+        }
     }
 
     private void Update()
