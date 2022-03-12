@@ -305,7 +305,7 @@ MonoBehaviour:
   fade: {fileID: 2140066462}
   StartVoice: {fileID: 8300000, guid: 25d575d897e2746a4a68da98b45d6f31, type: 3}
   StartSE: {fileID: 8300000, guid: 25d575d897e2746a4a68da98b45d6f31, type: 3}
-  flameCountOver: 200
+  flameCountOver: 100
   PCButton: {fileID: 1906695483}
   PhoneButton: {fileID: 665676835}
 --- !u!114 &665676838
@@ -863,7 +863,7 @@ MonoBehaviour:
   fade: {fileID: 2140066462}
   StartVoice: {fileID: 8300000, guid: 25d575d897e2746a4a68da98b45d6f31, type: 3}
   StartSE: {fileID: 8300000, guid: 25d575d897e2746a4a68da98b45d6f31, type: 3}
-  flameCountOver: 200
+  flameCountOver: 100
   PCButton: {fileID: 1906695483}
   PhoneButton: {fileID: 665676835}
 --- !u!114 &1906695486

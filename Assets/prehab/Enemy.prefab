@@ -255,5 +255,5 @@ MonoBehaviour:
   gravity: 3
   nonvisible: 0
   checkCollision: {fileID: 4731366438734089717}
-  score: 10
+  score: 30
   enemyDownSE: {fileID: 8300000, guid: 1e6b74f6b14df4567b277c5ccf809e85, type: 3}
